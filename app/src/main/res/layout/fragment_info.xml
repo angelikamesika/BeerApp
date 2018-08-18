@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
+    <EditText
+        android:id="@+id/search_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="Search city" />
+
+    <LinearLayout
+        android:id="@+id/lo_cities"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_city"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_no_results"
+            android:textSize="16sp" />
+
+        <ListView
+            android:id="@+id/list_cities"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:dividerHeight="1dp"
+            android:divider="#000000">
+
+        </ListView>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lo_restaurant"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_city"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/lv_restaurant_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lo_progress"
+        android:orientation="vertical"
+        android:background="#55000000">
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/progress_bar"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progress_bar"
+            android:layout_marginTop="16dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/please_wait"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
