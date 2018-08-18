@@ -36,6 +36,7 @@ public class FragmentInfo extends Fragment {
     private CityAdapter mCityAdapter;
     private List<City> mListCities;
 
+
     private LinearLayout mLoCities;
     private LinearLayout mLoRestaurantInfo;
     private ListView mListRestaurantInfo;
