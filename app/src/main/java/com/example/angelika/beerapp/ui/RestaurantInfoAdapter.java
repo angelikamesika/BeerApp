@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.angelika.beerapp.R;
 import com.example.angelika.beerapp.model.RestaurantInfo;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,12 +21,12 @@ public class RestaurantInfoAdapter extends BaseAdapter {
 
     private List<RestaurantInfo> mRestaurantInfoList;
     private LayoutInflater mInflater;
-    private Context mContext;
+
 
     public RestaurantInfoAdapter(Context context, List<RestaurantInfo> aRestaurantInfoList) {
         mRestaurantInfoList = aRestaurantInfoList;
+        Collections.sort(mRestaurantInfoList);
         mInflater = LayoutInflater.from(context);
-        mContext = context;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.angelika.beerapp;
+package com.example.angelika.beerapp.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -6,13 +6,13 @@ import android.util.Log;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
+import com.example.angelika.beerapp.R;
 import com.example.angelika.beerapp.model.City;
 import com.example.angelika.beerapp.model.Input;
 import com.example.angelika.beerapp.model.Restaurant;
 import com.example.angelika.beerapp.model.RestaurantInfo;
 import com.example.angelika.beerapp.providers.OnLocationDetailsListener;
 import com.example.angelika.beerapp.providers.RestaurantsProvider;
-import com.example.angelika.beerapp.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,9 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.json.JSONObject;
-
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnLocationDetailsListener {
@@ -95,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void showRestaurantInfo(Restaurant aRestaurant) {
-        List<RestaurantInfo> list = Utils.getFieldsWithValueForInstanceRestaurant(Input.class, aRestaurant);
+        List<RestaurantInfo> list = mRestaurantsProvider.getFieldsWithValueForInstanceRestaurant(Input.class, aRestaurant);
         mFragmentInfo.showRestaurantInfo(list);
     }
 

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/info_fragment"
-        class="com.example.angelika.beerapp.FragmentInfo"
+        class="com.example.angelika.beerapp.ui.FragmentInfo"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -22,5 +22,5 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        tools:context="com.example.angelika.beerapp.MapsActivity" />
+        tools:context="com.example.angelika.beerapp.ui.MapsActivity" />
 </LinearLayout>

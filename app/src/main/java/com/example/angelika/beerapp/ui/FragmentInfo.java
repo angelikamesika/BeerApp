@@ -1,4 +1,4 @@
-package com.example.angelika.beerapp;
+package com.example.angelika.beerapp.ui;
 
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -18,11 +18,10 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.angelika.beerapp.R;
 import com.example.angelika.beerapp.model.City;
 import com.example.angelika.beerapp.model.RestaurantInfo;
 import com.example.angelika.beerapp.providers.CityProvider;
-import com.example.angelika.beerapp.ui.CityAdapter;
-import com.example.angelika.beerapp.ui.RestaurantInfoAdapter;
 
 import java.util.List;
 

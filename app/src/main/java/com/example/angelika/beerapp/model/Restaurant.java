@@ -5,28 +5,28 @@ package com.example.angelika.beerapp.model;
  */
 
 public class Restaurant {
-    @Input(name="Name")
+    @Input(name="Name", place=0)
     private String mName;
 
-    @Input(name="Address")
+    @Input(name="Address", place=1)
     private String mAddress;
 
     private double mLat;
     private double mLng;
 
-    @Input(name="Cuisines")
+    @Input(name="Cuisines", place=3)
     private String mCuisines;
 
-    @Input(name="Average cost for two")
+    @Input(name="Average cost for two", place=4)
     private String mAverageCostForTwo;
 
-    @Input(name="Currency")
+    @Input(name="Currency", place=5)
     private String mCurrency;
 
-    @Input(name="Price range")
+    @Input(name="Price range", place=6)
     private String mPriceRange;
 
-    @Input(name="User rating")
+    @Input(name="User rating", place=7)
     private String mUserRating;
 
     private String mPhotoURL;
