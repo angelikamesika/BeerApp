@@ -28,16 +28,16 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     compile 'com.amitshekhar.android:android-networking:1.0.2'
-
-  //  When using it with RxJava2
-
-    compile 'com.amitshekhar.android:rx2-android-networking:1.0.2'
-
-  //  When using it with RxJava
-
-    compile 'com.amitshekhar.android:rx-android-networking:1.0.2'
-
-  //  When using it with Jackson Parser
-
-    compile 'com.amitshekhar.android:jackson-android-networking:1.0.2'
+//
+//  //  When using it with RxJava2
+//
+//    compile 'com.amitshekhar.android:rx2-android-networking:1.0.2'
+//
+//  //  When using it with RxJava
+//
+//    compile 'com.amitshekhar.android:rx-android-networking:1.0.2'
+//
+//  //  When using it with Jackson Parser
+//
+//    compile 'com.amitshekhar.android:jackson-android-networking:1.0.2'
 }
