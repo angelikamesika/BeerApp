@@ -10,6 +10,9 @@ APIs
 - Cities - http://simplemaps.com/resources/world-cities-data 
 - Maps - Apple MapKit / Google Maps
 
+NetWork library : 
+Fast Android Networking Library
+
 Restrictions
 - application do not check internet connection
 - application do not handle network errors
