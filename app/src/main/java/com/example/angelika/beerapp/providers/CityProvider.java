@@ -3,7 +3,7 @@ package com.example.angelika.beerapp.providers;
 import android.content.res.AssetManager;
 import android.util.Log;
 
-import com.example.angelika.beerapp.app.BeerApplication;
+import com.example.angelika.beerapp.app.RestaurantsApplication;
 import com.example.angelika.beerapp.db.DB;
 import com.example.angelika.beerapp.model.City;
 
@@ -21,14 +21,17 @@ import java.util.List;
 public class CityProvider {
 
     public List<City> getCities() {
-        return getCityListFromDB();
+        List<City> list = DB.INSTANCE.getCities();
+        if (list.size() == 0) {
+            list = downloadCities();
+        }
+        return list;
     }
 
 
     private List<City> downloadCities() {
         //read file from assets
-        // city,city_ascii,lat,lng,pop,country,iso2,iso3,province
-        AssetManager assetManager = BeerApplication.getApp().getAssets();
+        AssetManager assetManager = RestaurantsApplication.getApp().getAssets();
         InputStream is = null;
         List<City> list = null;
         try {
@@ -51,23 +54,8 @@ public class CityProvider {
             }
             is.close();
         } catch (IOException aE) {
-            Log.d("AAA_DB", "downloadCities EXCEPTION " + aE.getMessage());
             aE.printStackTrace();
         }
-        Log.d("AAA_DB", "downloadCities() 111 list fromDB = " + list.size());
-        return list;
-
-    }
-
-    private List<City> getCityListFromDB() {
-        List<City> list = DB.INSTANCE.getCities();
-        Log.d("AAA_DB", "getCityListFromDB 000 list fromDB = " + list.size());
-        if (list.size() == 0) {
-            list = downloadCities();
-        }
-        Log.d("AAA_DB", "getCityListFromDB 222 list fromDB = " + list.size());
         return list;
     }
-
-
 }
