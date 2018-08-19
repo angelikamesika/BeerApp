@@ -41,7 +41,7 @@ public class CityProvider {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
-                String[] lineSplit = line.split(",");
+                String[] lineSplit = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
                 String cityName = lineSplit[0];
                 String countryName = lineSplit[5];
                 double cityLat = Double.valueOf(lineSplit[2]);
