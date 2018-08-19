@@ -6,8 +6,8 @@ import android.app.Application;
  * Created by Angelika on 02.08.2018.
  */
 
-public class BeerApplication extends Application {
-    private static BeerApplication APP;
+public class RestaurantsApplication extends Application {
+    private static RestaurantsApplication APP;
 
     @Override
     public void onCreate() {
@@ -15,7 +15,7 @@ public class BeerApplication extends Application {
         APP = this;
     }
 
-    public static BeerApplication getApp() {
+    public static RestaurantsApplication getApp() {
         return APP;
     }
 

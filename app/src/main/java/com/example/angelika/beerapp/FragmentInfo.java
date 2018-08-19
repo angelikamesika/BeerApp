@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -43,14 +45,14 @@ public class FragmentInfo extends Fragment {
     private TextView mTxtNoResults;
     private RelativeLayout mLoProgress;
 
+    private RelativeLayout mLoSearchResult;
+    private TextView mTvSearchResult;
+    private ImageView mImgCloseSearchResult;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //    mListCities = new CityProvider().getCities();
-//        AsyncTaskRunner runner = new AsyncTaskRunner();
-//        runner.execute();
     }
 
     @Override
@@ -69,15 +71,28 @@ public class FragmentInfo extends Fragment {
         mLoProgress = v.findViewById(R.id.lo_progress);
         mLoProgress.setVisibility(View.GONE);
 
+        mLoSearchResult = v.findViewById(R.id.lo_search_result);
+        mTvSearchResult = v.findViewById(R.id.tv_search_result);
+        mImgCloseSearchResult = v.findViewById(R.id.img_close_search_results);
+        mImgCloseSearchResult.setImageDrawable(getActivity().getDrawable(R.drawable.ic_close_black_24dp));
+
+        mImgCloseSearchResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View aView) {
+                hideSearchResult();
+            }
+        });
+
+
         // Add Text Change Listener to EditText
         mSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Call back the Adapter with current character to Filter
-                if (s.length() != 0)
+                if (s.length() != 0) {
                     showCitiesList();
-                mCityAdapter.getFilter().filter(s.toString());
+                    mCityAdapter.getFilter().filter(s.toString());
+                }
             }
 
             @Override
@@ -93,20 +108,35 @@ public class FragmentInfo extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> aAdapterView, View aView, int aI, long aL) {
                 String name = ((City) mCityAdapter.getItem(aI)).getCityName();
-                mSearch.setText(name);
+                showSearchResult(name);
                 sendRequest(((City) mCityAdapter.getItem(aI)));
             }
         });
 
+        hideSearchResult();
         AsyncTaskRunner runner = new AsyncTaskRunner();
         runner.execute();
         return v;
+    }
+
+    private void hideSearchResult() {
+        mLoSearchResult.setVisibility(View.GONE);
+        mSearch.setVisibility(View.VISIBLE);
+        mSearch.setText("");
+    }
+
+    private void showSearchResult(String aCityName) {
+        mLoSearchResult.setVisibility(View.VISIBLE);
+        mSearch.setVisibility(View.GONE);
+        mTvSearchResult.setText(aCityName);
+
     }
 
     public void showCitiesList() {
         mLoRestaurantInfo.setVisibility(View.GONE);
         mLoCities.setVisibility(View.VISIBLE);
         mListViewCities.setVisibility(View.VISIBLE);
+        mTxtNoResults.setText("");
     }
 
     public void showRestaurantInfo(List<RestaurantInfo> list) {
@@ -153,6 +183,7 @@ public class FragmentInfo extends Fragment {
             mListCities = result;
             mCityAdapter = new CityAdapter(getContext(), mListCities);
             mListViewCities.setAdapter(mCityAdapter);
+            mListViewCities.setVisibility(View.VISIBLE);
             hideProgress();
         }
 

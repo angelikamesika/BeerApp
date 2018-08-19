@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.example.angelika.beerapp.app.BeerApplication;
+import com.example.angelika.beerapp.app.RestaurantsApplication;
 import com.example.angelika.beerapp.model.City;
 
 import java.util.ArrayList;
@@ -26,8 +26,7 @@ public enum DB {
 
     DB() {
         mLock = new Object();
-
-        DBHelper helper = new DBHelper(BeerApplication.getApp());
+        DBHelper helper = new DBHelper(RestaurantsApplication.getApp());
         mRO = helper.getReadableDatabase();
         mRW = helper.getWritableDatabase();
     }

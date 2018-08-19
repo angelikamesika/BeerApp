@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".app.BeerApplication"
+        android:name=".app.RestaurantsApplication"
         android:theme="@style/AppTheme">
 
         <!--
