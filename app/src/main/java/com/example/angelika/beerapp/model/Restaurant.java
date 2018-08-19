@@ -6,16 +6,16 @@ package com.example.angelika.beerapp.model;
 
 public class Restaurant {
     @Input(name="Name")
-    private String mName = "Test Name Restaurant";
+    private String mName;
 
     @Input(name="Address")
-    private String mAddress = "tset Address";
+    private String mAddress;
 
     private double mLat;
     private double mLng;
 
     @Input(name="Cuisines")
-    private String mCuisines = "Cafe";
+    private String mCuisines;
 
     @Input(name="Average cost for two")
     private String mAverageCostForTwo;

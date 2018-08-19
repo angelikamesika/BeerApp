@@ -7,13 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
-
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -123,6 +121,7 @@ public class FragmentInfo extends Fragment {
         mLoSearchResult.setVisibility(View.GONE);
         mSearch.setVisibility(View.VISIBLE);
         mSearch.setText("");
+        showCitiesList();
     }
 
     private void showSearchResult(String aCityName) {
@@ -179,7 +178,6 @@ public class FragmentInfo extends Fragment {
         @Override
         protected void onPostExecute(List<City> result) {
             // execution of result of Long time consuming operation
-            Log.d("AAA_DB", " onPostExecute result = " + result.size());
             mListCities = result;
             mCityAdapter = new CityAdapter(getContext(), mListCities);
             mListViewCities.setAdapter(mCityAdapter);

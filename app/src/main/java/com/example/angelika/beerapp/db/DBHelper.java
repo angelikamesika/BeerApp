@@ -52,7 +52,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static String dbFile(Context aContext) {
         String dir = FileUtils.basePath(aContext) + "/db/";
         FileUtils.createDirectory(dir);
-        return dir + "beerapp.db";
+        return dir + "restaurantapp.db";
     }
 
     @Override

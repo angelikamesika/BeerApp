@@ -9,6 +9,15 @@
         android:layout_height="wrap_content"
         android:id="@+id/list_item_txt_city"
         android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"/>
+        android:layout_marginBottom="2dp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_item_txt_country"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+       />
 
 </LinearLayout>

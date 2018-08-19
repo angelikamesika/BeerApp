@@ -29,8 +29,8 @@ public class RestaurantsProvider {
     private static final String TAG = "RestaurantsProvider";
 
 
-    public void getRestaurantsByCity(City aCity,
-                                     final LocationDetailsListener aLocationDetailsListener) {
+    public void requestRestaurantsByCity(City aCity,
+                                         final OnLocationDetailsListener aOnLocationDetailsListener) {
         AndroidNetworking.get(LOCATION)
                 .addQueryParameter("user-key", KEY)
                 .addQueryParameter("query", aCity.getCityName())
@@ -38,11 +38,11 @@ public class RestaurantsProvider {
                 .setTag("test")
                 .setPriority(Priority.LOW)
                 .build()
-                .getAsJSONObject(new LocationListenerImp(aCity, aLocationDetailsListener));
+                .getAsJSONObject(new OnLocationListenerImp(aCity, aOnLocationDetailsListener));
     }
 
 
-    private void sendRequestLocationDetails(CityLocation aLocation, LocationDetailsListener aListener) {
+    private void sendRequestLocationDetails(CityLocation aLocation, OnLocationDetailsListener aListener) {
         AndroidNetworking.get(LOCATION_DETAILS)
                 .addQueryParameter("entity_type", aLocation.getEntityType())
                 .addQueryParameter("entity_id", aLocation.getEntityId())
@@ -54,8 +54,7 @@ public class RestaurantsProvider {
     }
 
     public List<Restaurant> getRestaurants(JSONObject response) {
-        List<Restaurant> listRestaurants = getListRestaurants(response);
-        return listRestaurants;
+        return getListRestaurants(response);
     }
 
     private List<Restaurant> getListRestaurants(JSONObject response) {
@@ -115,33 +114,49 @@ public class RestaurantsProvider {
 
     }
 
-    public class LocationListenerImp implements LocationListener {
+    public class OnLocationListenerImp implements OnLocationListener {
         private City mCity;
-        private LocationDetailsListener mLocationDetailsListener;
+        private OnLocationDetailsListener mOnLocationDetailsListener;
 
 
-        public LocationListenerImp(City aCity, LocationDetailsListener aLocationDetailsListener) {
+        public OnLocationListenerImp(City aCity, OnLocationDetailsListener aOnLocationDetailsListener) {
             mCity = aCity;
-            mLocationDetailsListener = aLocationDetailsListener;
+            mOnLocationDetailsListener = aOnLocationDetailsListener;
 
         }
 
         @Override
-        public void doOnLocationResponse(JSONObject response) {
+        public void onLocationResponse(JSONObject response) {
             checkLocation(response);
+        }
+
+        @Override
+        public void onLocationError(ANError aANError) {
+            String body = aANError.getErrorBody();
+            Log.d(TAG, "onError error = " + body);
         }
 
 
         @Override
         public void onResponse(JSONObject response) {
             Log.d(TAG, "onResponse response = " + response);
-            doOnLocationResponse(response);
+
+            try {
+                String status = response.getString("status");
+                if(status.equals("success")) {
+                    onLocationResponse(response);
+                }else{
+                    //do something
+                }
+            } catch (JSONException aE) {
+                aE.printStackTrace();
+            }
+
         }
 
         @Override
         public void onError(ANError anError) {
-            String body = anError.getErrorBody();
-            Log.d(TAG, "onError error = " + body);
+            onLocationError(anError);
         }
 
         private void checkLocation(JSONObject response) {
@@ -164,18 +179,17 @@ public class RestaurantsProvider {
                         String entity_type = jsonObject.getString("entity_type");
                         String entity_id = jsonObject.getString("entity_id");
                         CityLocation location = new CityLocation(entity_id, entity_type);
-                        sendRequestLocationDetails(location, mLocationDetailsListener);
+                        sendRequestLocationDetails(location, mOnLocationDetailsListener);
                         break;
                     }
                 }
                 if (!isFoundLocation) {
-                    mLocationDetailsListener.showNotFoundLocation(mCity);
+                    mOnLocationDetailsListener.showNotFoundLocation(mCity);
                 }
             } catch (JSONException aE) {
                 Log.d(TAG, "checkLocation JSONException  " + aE.getMessage());
                 aE.printStackTrace();
             }
-
         }
     }
 }

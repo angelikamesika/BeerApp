@@ -27,17 +27,6 @@ public class CityLocation {
     private String mEntityType;
     private String mEntityId;
 
-
-    public CityLocation(String aCityName, String aCountryName, String aEntityId,
-                        String aEntityType, double aLat, double aLng) {
-        mCityName = aCityName;
-        mCountryName = aCountryName;
-        mEntityType = aEntityType;
-        mEntityId = aEntityId;
-        mLat = aLat;
-        mLng = aLng;
-    }
-
     public CityLocation(String aEntityId,
                         String aEntityType) {
         mEntityType = aEntityType;
@@ -66,5 +55,21 @@ public class CityLocation {
 
     public String getEntityId() {
         return mEntityId;
+    }
+
+    public void setCityName(String aCityName) {
+        mCityName = aCityName;
+    }
+
+    public void setCountryName(String aCountryName) {
+        mCountryName = aCountryName;
+    }
+
+    public void setLat(double aLat) {
+        mLat = aLat;
+    }
+
+    public void setLng(double aLng) {
+        mLng = aLng;
     }
 }

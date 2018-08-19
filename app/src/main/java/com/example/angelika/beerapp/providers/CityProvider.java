@@ -1,7 +1,6 @@
 package com.example.angelika.beerapp.providers;
 
 import android.content.res.AssetManager;
-import android.util.Log;
 
 import com.example.angelika.beerapp.app.RestaurantsApplication;
 import com.example.angelika.beerapp.db.DB;
@@ -23,16 +22,16 @@ public class CityProvider {
     public List<City> getCities() {
         List<City> list = DB.INSTANCE.getCities();
         if (list.size() == 0) {
-            list = downloadCities();
+            list = importCities();
         }
         return list;
     }
 
 
-    private List<City> downloadCities() {
+    private List<City> importCities() {
         //read file from assets
         AssetManager assetManager = RestaurantsApplication.getApp().getAssets();
-        InputStream is = null;
+        InputStream is;
         List<City> list = null;
         try {
             //is = assetManager.open("cities_test");
@@ -48,6 +47,7 @@ public class CityProvider {
                 double cityLat = Double.valueOf(lineSplit[2]);
                 double cityLng = Double.valueOf(lineSplit[3]);
                 City city = new City(cityName, countryName, cityLat, cityLng);
+                //add to list
                 list.add(city);
                 //write to DB
                 DB.INSTANCE.addCity(city);

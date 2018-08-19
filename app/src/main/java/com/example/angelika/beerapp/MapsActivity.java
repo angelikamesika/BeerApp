@@ -10,7 +10,7 @@ import com.example.angelika.beerapp.model.City;
 import com.example.angelika.beerapp.model.Input;
 import com.example.angelika.beerapp.model.Restaurant;
 import com.example.angelika.beerapp.model.RestaurantInfo;
-import com.example.angelika.beerapp.providers.LocationDetailsListener;
+import com.example.angelika.beerapp.providers.OnLocationDetailsListener;
 import com.example.angelika.beerapp.providers.RestaurantsProvider;
 import com.example.angelika.beerapp.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationDetailsListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnLocationDetailsListener {
 
     private final static int MAP_ZOOM = 10;
     private static final String TAG = "Restaurants";
@@ -109,9 +109,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void sendRequest(City aCity) {
         mCity = aCity;
-        mRestaurantsProvider.getRestaurantsByCity(aCity, this);
+        mRestaurantsProvider.requestRestaurantsByCity(aCity, this);
         showProgress();
-
     }
 
     private void moveToCityOnMap(City aCity) {
@@ -121,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void doOnLocationDetailsResponse(City aCity, List<Restaurant> aList) {
+    public void onLocationDetailsResponse(City aCity, List<Restaurant> aList) {
         moveToCityOnMap(aCity);
         addRestaurantsToMap(aList);
     }
@@ -133,16 +132,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    public void onLocationDetailsError(ANError anError) {
+        Log.d(TAG, "ANError anError : " + anError.getErrorBody());
+        hideProgress();
+    }
+
+    @Override
     public void onResponse(JSONObject response) {
         List<Restaurant> listRestaurants = mRestaurantsProvider.getRestaurants(response);
-        doOnLocationDetailsResponse(mCity, listRestaurants);
+        onLocationDetailsResponse(mCity, listRestaurants);
         hideProgress();
     }
 
     @Override
     public void onError(ANError anError) {
-        Log.d(TAG, "anError DETAILS body = " + anError.getErrorBody());
-        hideProgress();
+        onLocationDetailsError(anError);
     }
 
 }

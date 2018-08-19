@@ -1,6 +1,7 @@
 package com.example.angelika.beerapp.db;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
@@ -17,12 +18,12 @@ import java.util.List;
  */
 
 public enum DB {
-    INSTANCE;
+    INSTANCE();
 
     private SQLiteDatabase mRO;
     private SQLiteDatabase mRW;
-
     private final Object mLock;
+    private static final String TAG = "Restourants_DB";
 
     DB() {
         mLock = new Object();
@@ -31,7 +32,7 @@ public enum DB {
         mRW = helper.getWritableDatabase();
     }
 
-    // ======================== CITIES
+    // =============== CITIES
 
     public void addCity(City aCity) {
         ContentValues cv = new ContentValues();
@@ -76,25 +77,7 @@ public enum DB {
                 c.close();
             }
         }
-        Log.d("AAA_db", "getCities size = " + result.size());
+        Log.d(TAG, "getCities size = " + result.size());
         return result;
     }
-
-
-//    public void updateChannelRss(String aSectionId, String aChannelId, String aRss) {
-//        ContentValues cv = new ContentValues();
-//        cv.put(DBHelper.FEED_SECTION_ID, aSectionId);
-//        cv.put(DBHelper.FEED_CHANNEL_ID, aChannelId);
-//        cv.put(DBHelper.FEED_RSS, aRss);
-//        cv.put(DBHelper.FEED_UPDATE_TIME, System.currentTimeMillis());
-//
-//        synchronized (mLock) {
-//            int c = mRW.update(DBHelper.TABLE_FEED, cv,
-//                    DBHelper.FEED_SECTION_ID + "='" + aSectionId +
-//                            "' and " + DBHelper.FEED_CHANNEL_ID + "='" + aChannelId + "'",
-//                    null);
-//            if (c == 0) {
-//                mRW.insert(DBHelper.TABLE_FEED, null, cv);
-//            }
-//        }
-   }
+}

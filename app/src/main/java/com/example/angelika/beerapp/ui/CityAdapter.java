@@ -25,13 +25,12 @@ public class CityAdapter extends BaseAdapter implements Filterable {
     private List<City> mOriginalValues; // Original Values
     private List<City> mDisplayedValues;    // Values to be displayed
     private LayoutInflater mInflater;
-    private Context mContext;
 
-    public CityAdapter(Context context, List<City> aList) {
+
+    public CityAdapter(Context aContext, List<City> aList) {
         this.mOriginalValues = aList;
         this.mDisplayedValues = aList;
-        mInflater = LayoutInflater.from(context);
-        mContext = context;
+        mInflater = LayoutInflater.from(aContext);
     }
 
     @Override
@@ -52,7 +51,8 @@ public class CityAdapter extends BaseAdapter implements Filterable {
 
     private class ViewHolder {
         LinearLayout mLoContainer;
-        TextView mTvName;
+        TextView mTvCityName;
+        TextView mTvCountryName;
     }
 
     @Override
@@ -61,19 +61,22 @@ public class CityAdapter extends BaseAdapter implements Filterable {
         ViewHolder holder = null;
 
         if (convertView == null) {
-
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.list_city_item, null);
-            holder.mLoContainer = (LinearLayout) convertView.findViewById(R.id.list_item_lo);
-            holder.mTvName = (TextView) convertView.findViewById(R.id.list_item_txt_city);
+            holder.mLoContainer =  convertView.findViewById(R.id.list_item_lo);
+            holder.mTvCityName =  convertView.findViewById(R.id.list_item_txt_city);
+            holder.mTvCountryName =  convertView.findViewById(R.id.list_item_txt_country);
 
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        //  String txt = mDisplayedValues.get(position).getCityName() + "(" + mDisplayedValues.get(position).getCountryName() + ")";
-        String txt = mDisplayedValues.get(position).getCityName();
-        holder.mTvName.setText(txt);
+
+        String cityName = mDisplayedValues.get(position).getCityName();
+        holder.mTvCityName.setText(cityName);
+
+        String countryName = mDisplayedValues.get(position).getCountryName();
+        holder.mTvCountryName.setText(countryName);
 
         return convertView;
     }
