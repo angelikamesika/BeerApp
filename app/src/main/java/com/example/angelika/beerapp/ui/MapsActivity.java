@@ -20,7 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import org.json.JSONObject;
+
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnLocationDetailsListener {
@@ -31,7 +31,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FragmentInfo mFragmentInfo;
     private RestaurantsProvider mRestaurantsProvider;
-    private City mCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mRestaurantsProvider = new RestaurantsProvider();
 
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -93,7 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void showRestaurantInfo(Restaurant aRestaurant) {
-        List<RestaurantInfo> list = mRestaurantsProvider.getFieldsWithValueForInstanceRestaurant(Input.class, aRestaurant);
+        List<RestaurantInfo> list = RestaurantsProvider.getFieldsWithValueForInstanceRestaurant(Input.class, aRestaurant);
         mFragmentInfo.showRestaurantInfo(list);
     }
 
@@ -106,7 +104,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void sendRequest(City aCity) {
-        mCity = aCity;
         mRestaurantsProvider.requestRestaurantsByCity(aCity, this);
         showProgress();
     }
@@ -118,13 +115,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onLocationDetailsResponse(City aCity, List<Restaurant> aList) {
+    public void onLocationDetailsSuccess(City aCity, List<Restaurant> aList) {
         moveToCityOnMap(aCity);
         addRestaurantsToMap(aList);
+        hideProgress();
     }
 
     @Override
-    public void showNotFoundLocation(City aCity) {
+    public void onLocationNotFound(City aCity) {
         mFragmentInfo.displayNotFoundLocation(aCity);
         hideProgress();
     }
@@ -134,17 +132,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "ANError anError : " + anError.getErrorBody());
         hideProgress();
     }
-
-    @Override
-    public void onResponse(JSONObject response) {
-        List<Restaurant> listRestaurants = mRestaurantsProvider.getRestaurants(response);
-        onLocationDetailsResponse(mCity, listRestaurants);
-        hideProgress();
-    }
-
-    @Override
-    public void onError(ANError anError) {
-        onLocationDetailsError(anError);
-    }
-
 }

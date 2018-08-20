@@ -13,8 +13,8 @@ import java.util.List;
  * Created by Angelika on 16.08.2018.
  */
 
-public interface OnLocationDetailsListener extends JSONObjectRequestListener {
-    void onLocationDetailsResponse(City aCity, List<Restaurant> aList);
-    void showNotFoundLocation(City aCity);
+public interface OnLocationDetailsListener {
+    void onLocationDetailsSuccess(City aCity, List<Restaurant> aList);
+    void onLocationNotFound(City aCity);
     void onLocationDetailsError(ANError anError);
 }

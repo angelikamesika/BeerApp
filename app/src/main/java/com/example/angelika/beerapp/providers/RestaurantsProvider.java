@@ -6,6 +6,7 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.example.angelika.beerapp.model.City;
 import com.example.angelika.beerapp.model.CityLocation;
 import com.example.angelika.beerapp.model.Input;
@@ -28,15 +29,21 @@ import java.util.List;
  */
 
 public class RestaurantsProvider {
-    private final String KEY = "885cdf0f3c2235a1a5792084ddc74a9b";
-    private final String LOCATION = "https://developers.zomato.com/api/v2.1/locations";
-    private final String LOCATION_DETAILS = "https://developers.zomato.com/api/v2.1/location_details";
+    private static final String KEY = "885cdf0f3c2235a1a5792084ddc74a9b";
+    private static final String LOCATION = "https://developers.zomato.com/api/v2.1/locations";
+    private static final String LOCATION_DETAILS = "https://developers.zomato.com/api/v2.1/location_details";
     private static final int MAX_RADIUS = 10000;
     private static final String TAG = "RestaurantsProvider";
 
+    private City mCity;
+    private OnLocationDetailsListener mOnLocationDetailsListener;
 
     public void requestRestaurantsByCity(City aCity,
                                          final OnLocationDetailsListener aOnLocationDetailsListener) {
+
+        mCity = aCity;
+        mOnLocationDetailsListener = aOnLocationDetailsListener;
+
         AndroidNetworking.get(LOCATION)
                 .addQueryParameter("user-key", KEY)
                 .addQueryParameter("query", aCity.getCityName())
@@ -44,11 +51,66 @@ public class RestaurantsProvider {
                 .setTag("test")
                 .setPriority(Priority.LOW)
                 .build()
-                .getAsJSONObject(new OnLocationListenerImp(aCity, aOnLocationDetailsListener));
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse response = " + response);
+
+                        try {
+                            String status = response.getString("status");
+                            if (status.equals("success")) {
+                                checkLocation(response);
+                            } else {
+                                // TODO: show unknown error
+                            }
+                        } catch (JSONException aE) {
+                            aE.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if (mOnLocationDetailsListener != null) {
+                            mOnLocationDetailsListener.onLocationDetailsError(anError);
+                        }
+                    }
+                });
     }
 
+    private void checkLocation(JSONObject response) {
+        try {
+            JSONArray arraySuggestions = response.getJSONArray("location_suggestions");
+            boolean isFoundLocation = false;
+            for (int i = 0; i < arraySuggestions.length(); i++) {
+                JSONObject jsonObject = (JSONObject) arraySuggestions.get(i);
 
-    private void sendRequestLocationDetails(CityLocation aLocation, OnLocationDetailsListener aListener) {
+                double lat = jsonObject.getDouble("latitude");
+                double lng = jsonObject.getDouble("longitude");
+
+                float[] results = new float[1];
+                Location.distanceBetween(lat, lng,
+                        mCity.getLat(), mCity.getLng(),
+                        results);
+                Log.d(TAG, "checkLocation results[0] = " + results[0]);
+                if (results[0] < MAX_RADIUS) {
+                    isFoundLocation = true;
+                    String entity_type = jsonObject.getString("entity_type");
+                    String entity_id = jsonObject.getString("entity_id");
+                    CityLocation location = new CityLocation(entity_id, entity_type);
+                    sendRequestLocationDetails(location);
+                    break;
+                }
+            }
+            if (!isFoundLocation && mOnLocationDetailsListener != null) {
+                mOnLocationDetailsListener.onLocationNotFound(mCity);
+            }
+        } catch (JSONException aE) {
+            Log.d(TAG, "checkLocation JSONException  " + aE.getMessage());
+            aE.printStackTrace();
+        }
+    }
+
+    private void sendRequestLocationDetails(CityLocation aLocation) {
         AndroidNetworking.get(LOCATION_DETAILS)
                 .addQueryParameter("entity_type", aLocation.getEntityType())
                 .addQueryParameter("entity_id", aLocation.getEntityId())
@@ -56,14 +118,25 @@ public class RestaurantsProvider {
                 .setTag("test")
                 .setPriority(Priority.LOW)
                 .build()
-                .getAsJSONObject(aListener);
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        List<Restaurant> listRestaurants = parseRestaurants(response);
+                        if (mOnLocationDetailsListener != null) {
+                            mOnLocationDetailsListener.onLocationDetailsSuccess(mCity, listRestaurants);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        if (mOnLocationDetailsListener != null) {
+                            mOnLocationDetailsListener.onLocationDetailsError(anError);
+                        }
+                    }
+                });
     }
 
-    public List<Restaurant> getRestaurants(JSONObject response) {
-        return getListRestaurants(response);
-    }
-
-    private List<Restaurant> getListRestaurants(JSONObject response) {
+    private List<Restaurant> parseRestaurants(JSONObject response) {
         List<Restaurant> list = new ArrayList<>();
         try {
             JSONArray array = response.getJSONArray("best_rated_restaurant");
@@ -117,10 +190,9 @@ public class RestaurantsProvider {
 
         Log.d(TAG, "getRestaurants list.size() = " + list.size());
         return list;
-
     }
 
-    public  List<RestaurantInfo> getFieldsWithValueForInstanceRestaurant(Class<? extends Annotation> ann, Restaurant inst) {
+    public static List<RestaurantInfo> getFieldsWithValueForInstanceRestaurant(Class<? extends Annotation> ann, Restaurant inst) {
         List<RestaurantInfo> list = new ArrayList<>();
         Class c = Restaurant.class;
         for (Field field : c.getDeclaredFields()) {
@@ -131,14 +203,13 @@ public class RestaurantsProvider {
                 int place = inputAnnotation.place();
                 String methodName = "get" + field.getName().substring(1, field.getName().length());
                 try {
+                    //noinspection unchecked
                     Method method = c.getMethod(methodName);
                     try {
                         String value = (String) method.invoke(inst);
                         RestaurantInfo info = new RestaurantInfo(name + " : " + value, place);
                         list.add(info);
-                    } catch (IllegalAccessException aE) {
-                        aE.printStackTrace();
-                    } catch (InvocationTargetException aE) {
+                    } catch (IllegalAccessException | InvocationTargetException aE) {
                         aE.printStackTrace();
                     }
 
@@ -149,86 +220,6 @@ public class RestaurantsProvider {
         }
 
         return list;
-    }
-
-
-    public class OnLocationListenerImp implements OnLocationListener {
-        private City mCity;
-        private OnLocationDetailsListener mOnLocationDetailsListener;
-
-
-        public OnLocationListenerImp(City aCity, OnLocationDetailsListener aOnLocationDetailsListener) {
-            mCity = aCity;
-            mOnLocationDetailsListener = aOnLocationDetailsListener;
-
-        }
-
-        @Override
-        public void onLocationResponse(JSONObject response) {
-            checkLocation(response);
-        }
-
-        @Override
-        public void onLocationError(ANError aANError) {
-            String body = aANError.getErrorBody();
-            Log.d(TAG, "onError error = " + body);
-        }
-
-
-        @Override
-        public void onResponse(JSONObject response) {
-            Log.d(TAG, "onResponse response = " + response);
-
-            try {
-                String status = response.getString("status");
-                if(status.equals("success")) {
-                    onLocationResponse(response);
-                }else{
-                    //do something
-                }
-            } catch (JSONException aE) {
-                aE.printStackTrace();
-            }
-
-        }
-
-        @Override
-        public void onError(ANError anError) {
-            onLocationError(anError);
-        }
-
-        private void checkLocation(JSONObject response) {
-            try {
-                JSONArray arraySuggestions = response.getJSONArray("location_suggestions");
-                boolean isFoundLocation = false;
-                for (int i = 0; i < arraySuggestions.length(); i++) {
-                    JSONObject jsonObject = (JSONObject) arraySuggestions.get(i);
-
-                    double lat = jsonObject.getDouble("latitude");
-                    double lng = jsonObject.getDouble("longitude");
-
-                    float[] results = new float[1];
-                    Location.distanceBetween(lat, lng,
-                            mCity.getLat(), mCity.getLng(),
-                            results);
-                    Log.d(TAG, "checkLocation results[0] = " + results[0]);
-                    if (results[0] < MAX_RADIUS) {
-                        isFoundLocation = true;
-                        String entity_type = jsonObject.getString("entity_type");
-                        String entity_id = jsonObject.getString("entity_id");
-                        CityLocation location = new CityLocation(entity_id, entity_type);
-                        sendRequestLocationDetails(location, mOnLocationDetailsListener);
-                        break;
-                    }
-                }
-                if (!isFoundLocation) {
-                    mOnLocationDetailsListener.showNotFoundLocation(mCity);
-                }
-            } catch (JSONException aE) {
-                Log.d(TAG, "checkLocation JSONException  " + aE.getMessage());
-                aE.printStackTrace();
-            }
-        }
     }
 }
 
