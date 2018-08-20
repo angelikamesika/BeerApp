@@ -1,4 +1,5 @@
 Restaurants android app displays the best rated restaurants in a specific city.
+
  Features:
 1. Searchable list of cities (worldwide).
 2. A map that displays the location of the best rated restaurants (after selecting a city).
